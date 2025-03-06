@@ -19,12 +19,24 @@ public class JungleKingBoard extends JFrame {
     private int selectedCol = -1;
     private Piece bluePieceSelected;
     private Piece redPieceSelected;
+    private JLabel turnLabel;
 
     public JungleKingBoard() {
         setTitle("Jungle King Game Board");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(ROWS, COLS));
+        setLayout(new BorderLayout());
+
+        // Create turn indicator panel
+        JPanel topPanel = new JPanel();
+        turnLabel = new JLabel("Waiting for initial piece selection...");
+        turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(turnLabel);
+        add(topPanel, BorderLayout.NORTH);
+
+        // Create game board panel
+        JPanel boardPanel = new JPanel(new GridLayout(ROWS, COLS));
+        add(boardPanel, BorderLayout.CENTER);
 
         landIcon = scaleImage("Assets/Board/land.png", 100, 100);
         lakeIcon = scaleImage("Assets/Board/lake.png", 100, 100);
@@ -33,7 +45,7 @@ public class JungleKingBoard extends JFrame {
 
         grid = new JButton[ROWS][COLS];
         pieces = new Piece[ROWS][COLS];
-        initializeBoard();
+        initializeBoard(boardPanel);
         initializePieces();
         gameState = new GameState();
         addPieceSelectionListeners();
@@ -48,7 +60,7 @@ public class JungleKingBoard extends JFrame {
         setFocusable(true);
     }
 
-    private void initializeBoard() {
+    private void initializeBoard(JPanel boardPanel) {
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
                 grid[row][col] = new JButton();
@@ -56,7 +68,7 @@ public class JungleKingBoard extends JFrame {
                 grid[row][col].setBorderPainted(true); // Changed to true
                 grid[row][col].setFocusPainted(false);
                 grid[row][col].setContentAreaFilled(false);
-                add(grid[row][col]);
+                boardPanel.add(grid[row][col]);
             }
         }
     }
@@ -248,10 +260,15 @@ public class JungleKingBoard extends JFrame {
         pieces[toRow][toCol] = pieces[fromRow][fromCol];
         pieces[fromRow][fromCol] = null;
         updateBoardDisplay();
+        
+        // Update turn indicator
+        String currentTurn = gameState.isBlueTeamTurn() ? "Red" : "Blue";
+        turnLabel.setText(currentTurn + "'s Turn");
 
         // Check win condition
         if (isDen(toRow, toCol)) {
             gameState.setGameEnded(true);
+            turnLabel.setText((gameState.isBlueTeamTurn() ? "Blue" : "Red") + " team wins!");
             JOptionPane.showMessageDialog(this, 
                 (gameState.isBlueTeamTurn() ? "Blue" : "Red") + " team wins!");
         }
@@ -269,6 +286,7 @@ public class JungleKingBoard extends JFrame {
             
             if (bluePieceSelected != null && redPieceSelected != null) {
                 gameState.startGame(bluePieceSelected, redPieceSelected);
+                turnLabel.setText((gameState.isBlueTeamTurn() ? "Blue" : "Red") + "'s Turn");
                 JOptionPane.showMessageDialog(this, 
                     (gameState.isBlueTeamTurn() ? "Blue" : "Red") + " team goes first!");
             }
