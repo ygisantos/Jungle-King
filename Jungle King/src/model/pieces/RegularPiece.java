@@ -1,4 +1,4 @@
-package pieces;
+package src.model.pieces;
 
 public class RegularPiece extends Piece {
     public RegularPiece(String name, int rank, boolean isBlueTeam, String imagePath) {

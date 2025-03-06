@@ -1,4 +1,4 @@
-package pieces;
+package src.model.pieces;
 
 import javax.swing.ImageIcon;
 

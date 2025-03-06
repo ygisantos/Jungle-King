@@ -1,4 +1,4 @@
-package pieces;
+package src.model.pieces;
 
 public abstract class LionTiger extends Piece {
     public LionTiger(String name, int rank, boolean isBlueTeam, String imagePath) {
