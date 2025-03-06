@@ -1,29 +1,38 @@
 import pieces.Piece;
 
 public class GameState {
+    private boolean isGameStarted;
+    private boolean isGameEnded;
     private boolean isBlueTeamTurn;
-    private Piece selectedPiece;
-    private boolean gameStarted;
-    private boolean gameEnded;
-    private Piece bluePieceSelected; // For initial piece selection
-    private Piece redPieceSelected;  // For initial piece selection
 
     public GameState() {
-        this.gameStarted = false;
-        this.gameEnded = false;
+        isGameStarted = false;
+        isGameEnded = false;
+        isBlueTeamTurn = true;
     }
 
-    public void startGame(Piece bluePiece, Piece redPiece) {
-        this.bluePieceSelected = bluePiece;
-        this.redPieceSelected = redPiece;
-        this.isBlueTeamTurn = bluePiece.getRank() > redPiece.getRank();
-        this.gameStarted = true;
+    public void startGame(Piece bluePiece, Piece redPiece, boolean blueTeamFirst) {
+        isGameStarted = true;
+        isBlueTeamTurn = blueTeamFirst;
     }
 
-    // Getters and setters
-    public boolean isBlueTeamTurn() { return isBlueTeamTurn; }
-    public void toggleTurn() { isBlueTeamTurn = !isBlueTeamTurn; }
-    public boolean isGameStarted() { return gameStarted; }
-    public boolean isGameEnded() { return gameEnded; }
-    public void setGameEnded(boolean ended) { this.gameEnded = ended; }
+    public boolean isGameStarted() {
+        return isGameStarted;
+    }
+
+    public boolean isGameEnded() {
+        return isGameEnded;
+    }
+
+    public void setGameEnded(boolean ended) {
+        isGameEnded = ended;
+    }
+
+    public boolean isBlueTeamTurn() {
+        return isBlueTeamTurn;
+    }
+
+    public void toggleTurn() {
+        isBlueTeamTurn = !isBlueTeamTurn;
+    }
 }

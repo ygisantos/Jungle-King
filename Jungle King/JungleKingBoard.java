@@ -12,7 +12,9 @@ public class JungleKingBoard extends JFrame {
     private ImageIcon lakeIcon;
     private ImageIcon trapIcon;
     private ImageIcon denIcon;
+    private ImageIcon hiddenIcon;
     private Piece[][] pieces;
+    private Piece[][] originalPieces; // Add this field
     private GameState gameState;
     private Piece selectedPiece;
     private int selectedRow = -1;
@@ -42,6 +44,7 @@ public class JungleKingBoard extends JFrame {
         lakeIcon = scaleImage("Assets/Board/lake.png", 100, 100);
         trapIcon = scaleImage("Assets/Board/trap.png", 100, 100);
         denIcon = scaleImage("Assets/Board/den.png", 100, 100);
+        hiddenIcon = scaleImage("Assets/Board/hidden.png", 100, 100);
 
         grid = new JButton[ROWS][COLS];
         pieces = new Piece[ROWS][COLS];
@@ -75,26 +78,64 @@ public class JungleKingBoard extends JFrame {
 
     private void initializePieces() {
         // Blue team (top)
-        pieces[0][0] = new Lion(true);
-        pieces[0][2] = new Elephant(true);
-        pieces[1][1] = new Cat(true);
-        pieces[2][2] = new Wolf(true);
-        pieces[4][2] = new Leopard(true);
-        pieces[5][1] = new Dog(true);
-        pieces[6][0] = new Tiger(true);
-        pieces[6][2] = new Rat(true);
+        pieces = new Piece[ROWS][COLS];
+        originalPieces = new Piece[ROWS][COLS];
+
+        // Initialize original positions
+        originalPieces[0][0] = new Lion(true);
+        originalPieces[0][2] = new Elephant(true);
+        originalPieces[1][1] = new Cat(true);
+        originalPieces[2][2] = new Wolf(true);
+        originalPieces[4][2] = new Leopard(true);
+        originalPieces[5][1] = new Dog(true);
+        originalPieces[6][0] = new Tiger(true);
+        originalPieces[6][2] = new Rat(true);
         
         // Red team (bottom)
-        pieces[0][8] = new Tiger(false);
-        pieces[1][7] = new Dog(false);
-        pieces[2][6] = new Leopard(false);
-        pieces[0][6] = new Rat(false);
-        pieces[6][6] = new Elephant(false);
-        pieces[6][8] = new Lion(false);
-        pieces[5][7] = new Cat(false);
-        pieces[4][6] = new Wolf(false);
+        originalPieces[0][8] = new Tiger(false);
+        originalPieces[1][7] = new Dog(false);
+        originalPieces[2][6] = new Leopard(false);
+        originalPieces[0][6] = new Rat(false);
+        originalPieces[6][6] = new Elephant(false);
+        originalPieces[6][8] = new Lion(false);
+        originalPieces[5][7] = new Cat(false);
+        originalPieces[4][6] = new Wolf(false);
 
-        updateBoardDisplay();
+        // Create randomized list of pieces
+        java.util.List<Piece> allPieces = new java.util.ArrayList<>();
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                if (originalPieces[row][col] != null) {
+                    allPieces.add(originalPieces[row][col]);
+                }
+            }
+        }
+
+        // Randomize and place pieces
+        java.util.Collections.shuffle(allPieces);
+        int pieceIndex = 0;
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                if (!isLake(row, col) && !isDen(row, col) && pieceIndex < allPieces.size()) {
+                    pieces[row][col] = allPieces.get(pieceIndex++);
+                }
+            }
+        }
+
+        updateBoardDisplayWithHiddenPieces();
+    }
+
+    private void updateBoardDisplayWithHiddenPieces() {
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                ImageIcon baseIcon = getTileIcon(row, col);
+                if (pieces[row][col] != null) {
+                    grid[row][col].setIcon(overlayIcons(baseIcon, hiddenIcon));
+                } else {
+                    grid[row][col].setIcon(baseIcon);
+                }
+            }
+        }
     }
 
     private void updateBoardDisplay() {
@@ -236,6 +277,16 @@ public class JungleKingBoard extends JFrame {
             return false;
         }
 
+        // Special case for Lion and Tiger
+        if (piece instanceof Lion || piece instanceof Tiger) {
+            if (isLakeJumpMove(fromRow, fromCol, toRow, toCol)) {
+                return true;
+            }
+            if (isLake(toRow, toCol)) {
+                return false; // Lions and Tigers cannot enter lakes
+            }
+        }
+
         // Check if destination has a piece that can be captured
         if (pieces[toRow][toCol] != null) {
             if (pieces[toRow][toCol].isBlueTeam() == piece.isBlueTeam()) {
@@ -254,6 +305,48 @@ public class JungleKingBoard extends JFrame {
         // Check piece-specific movement rules
         boolean isLakeMove = isLake(toRow, toCol);
         return piece.canMoveToTile(fromRow, fromCol, toRow, toCol, isLakeMove);
+    }
+
+    private boolean isLakeJumpMove(int fromRow, int fromCol, int toRow, int toCol) {
+        // Only allow vertical or horizontal jumps
+        if (fromRow != toRow && fromCol != toCol) return false;
+        
+        // Check if destination has a piece that cannot be captured
+        if (pieces[toRow][toCol] != null) {
+            if (pieces[toRow][toCol].isBlueTeam() == pieces[fromRow][fromCol].isBlueTeam()) {
+                return false; // Can't jump to space with own piece
+            }
+            // Check if piece can be captured (similar to normal capture rules)
+            if (!pieces[fromRow][fromCol].canCapture(pieces[toRow][toCol])) {
+                return false;
+            }
+        }
+        
+        // Check if jump is across lake
+        if (fromRow == toRow) { // Horizontal jump
+            // Only allow jumps from edge to edge of lake (columns 2 to 6)
+            if ((fromCol == 2 && toCol == 6) || (fromCol == 6 && toCol == 2)) {
+                // Check for rat in the path
+                for (int col = 3; col <= 5; col++) {
+                    if (pieces[fromRow][col] instanceof Rat) return false;
+                }
+                return isLake(fromRow, 4); // Verify it's jumping over lake
+            }
+        } else { // Vertical jump
+            // Only allow jumps from edge to edge of lake (across rows)
+            if (((fromRow == 0 && toRow == 3) || (fromRow == 3 && toRow == 0) ||
+                 (fromRow == 3 && toRow == 6) || (fromRow == 6 && toRow == 3)) &&
+                (fromCol >= 3 && fromCol <= 5)) { // Must be in lake columns
+                // Check for rat in the path
+                int minRow = Math.min(fromRow, toRow);
+                int maxRow = Math.max(fromRow, toRow);
+                for (int row = minRow + 1; row < maxRow; row++) {
+                    if (pieces[row][fromCol] instanceof Rat) return false;
+                }
+                return isLake((fromRow + toRow)/2, fromCol); // Verify it's jumping over lake
+            }
+        }
+        return false;
     }
 
     private void movePiece(int fromRow, int fromCol, int toRow, int toCol) {
@@ -280,17 +373,46 @@ public class JungleKingBoard extends JFrame {
         if (!gameState.isGameStarted()) {
             if (pieces[row][col].isBlueTeam() && bluePieceSelected == null) {
                 bluePieceSelected = pieces[row][col];
+                // Hide the selected piece
+                grid[row][col].setIcon(overlayIcons(getTileIcon(row, col), hiddenIcon));
             } else if (!pieces[row][col].isBlueTeam() && redPieceSelected == null) {
                 redPieceSelected = pieces[row][col];
+                // Hide the selected piece
+                grid[row][col].setIcon(overlayIcons(getTileIcon(row, col), hiddenIcon));
             }
             
             if (bluePieceSelected != null && redPieceSelected != null) {
-                gameState.startGame(bluePieceSelected, redPieceSelected);
-                turnLabel.setText((gameState.isBlueTeamTurn() ? "Blue" : "Red") + "'s Turn");
-                JOptionPane.showMessageDialog(this, 
-                    (gameState.isBlueTeamTurn() ? "Blue" : "Red") + " team goes first!");
+                // Reveal selected pieces
+                determineFirstTurn();
             }
         }
+    }
+
+    private void determineFirstTurn() {
+        // Show selected pieces to players
+        String blueAnimal = bluePieceSelected.getClass().getSimpleName();
+        String redAnimal = redPieceSelected.getClass().getSimpleName();
+        
+        // Determine who goes first based on piece rank
+        boolean blueGoesFirst = bluePieceSelected.getRank() > redPieceSelected.getRank();
+        
+        JOptionPane.showMessageDialog(this, 
+            "Blue selected: " + blueAnimal + "\n" +
+            "Red selected: " + redAnimal + "\n\n" +
+            (blueGoesFirst ? "Blue" : "Red") + " team goes first!");
+        
+        gameState.startGame(bluePieceSelected, redPieceSelected, blueGoesFirst);
+        
+        // Restore original piece positions
+        pieces = new Piece[ROWS][COLS];
+        for (int row = 0; row < ROWS; row++) {
+            for (int col = 0; col < COLS; col++) {
+                pieces[row][col] = originalPieces[row][col];
+            }
+        }
+        
+        turnLabel.setText((gameState.isBlueTeamTurn() ? "Blue" : "Red") + "'s Turn");
+        updateBoardDisplay(); // Show pieces in their original positions
     }
 
     private void highlightValidMoves(int row, int col) {
