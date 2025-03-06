@@ -25,18 +25,18 @@ public class GameView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Create turn indicator panel
+        
         JPanel topPanel = new JPanel();
         GameModel.turnLabel = new JLabel("Waiting for initial piece selection...");
         GameModel.turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(GameModel.turnLabel);
         add(topPanel, BorderLayout.NORTH);
 
-        // Create game board panel
+        
         JPanel boardPanel = new JPanel(new GridLayout(GameModel.ROWS, GameModel.COLS));
         add(boardPanel, BorderLayout.CENTER);
 
-        // Update image loading paths
+        
         String basePath = "Jungle King/Assets/";
         GameModel.landIcon = scaleImage(basePath + "Board/land.png", 100, 100);
         GameModel.lakeIcon = scaleImage(basePath + "Board/lake.png", 100, 100);
@@ -50,7 +50,7 @@ public class GameView extends JFrame {
         initializePieces();
         gameController.addPieceSelectionListeners();
 
-        // Add keyboard listener
+        
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -61,11 +61,11 @@ public class GameView extends JFrame {
     }
 
     private void initializePieces() {
-        // Blue team (top)
+        
         GameModel.pieces = new Piece[GameModel.ROWS][GameModel.COLS];
         GameModel.originalPieces = new Piece[GameModel.ROWS][GameModel.COLS];
 
-        // Initialize original positions
+        
         GameModel.originalPieces[0][0] = new Lion(true);
         GameModel.originalPieces[0][2] = new Elephant(true);
         GameModel.originalPieces[1][1] = new Cat(true);
@@ -75,7 +75,7 @@ public class GameView extends JFrame {
         GameModel.originalPieces[6][0] = new Tiger(true);
         GameModel.originalPieces[6][2] = new Rat(true);
         
-        // Red team (bottom)
+        
         GameModel.originalPieces[0][8] = new Tiger(false);
         GameModel.originalPieces[1][7] = new Dog(false);
         GameModel.originalPieces[2][6] = new Leopard(false);
@@ -85,7 +85,7 @@ public class GameView extends JFrame {
         GameModel.originalPieces[5][7] = new Cat(false);
         GameModel.originalPieces[4][6] = new Wolf(false);
 
-        // Create randomized list of pieces
+        
         java.util.List<Piece> allPieces = new java.util.ArrayList<>();
         for (int row = 0; row < GameModel.ROWS; row++) {
             for (int col = 0; col < GameModel.COLS; col++) {
@@ -95,7 +95,7 @@ public class GameView extends JFrame {
             }
         }
 
-        // Randomize and place pieces
+        
         java.util.Collections.shuffle(allPieces);
         int pieceIndex = 0;
         for (int row = 0; row < GameModel.ROWS; row++) {
@@ -114,7 +114,7 @@ public class GameView extends JFrame {
             for (int col = 0; col < GameModel.COLS; col++) {
                 GameModel.grid[row][col] = new JButton();
                 GameModel.grid[row][col].setIcon(getTileIcon(row, col));
-                GameModel.grid[row][col].setBorderPainted(true); // Changed to true
+                GameModel.grid[row][col].setBorderPainted(true); 
                 GameModel.grid[row][col].setFocusPainted(false);
                 GameModel.grid[row][col].setContentAreaFilled(false);
                 boardPanel.add(GameModel.grid[row][col]);
@@ -202,13 +202,13 @@ public class GameView extends JFrame {
         gameController.selectedRow = -1;
         gameController.selectedCol = -1;
         
-        // Clear highlights with null border
+        
         for (int r = 0; r < GameModel.ROWS; r++) {
             for (int c = 0; c < GameModel.COLS; c++) {
                 GameModel.grid[r][c].setBorder(null);
             }
         }
-        requestFocus(); // Maintain keyboard focus after clearing
+        requestFocus(); 
     }
 
     public void updateBoardDisplay() {
@@ -225,7 +225,7 @@ public class GameView extends JFrame {
     }
 
     public void highlightSelectedPiece(int row, int col) {
-        // Make border thicker and more visible
+        
         GameModel.grid[row][col].setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.WHITE, 1),
             BorderFactory.createLineBorder(Color.GREEN, 3)
