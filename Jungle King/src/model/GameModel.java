@@ -2,8 +2,11 @@ package src.model;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
+import src.controller.GameController;
 import src.model.pieces.Piece;
 import src.view.GameView;
 
@@ -24,6 +27,7 @@ public class GameModel {
     public static ImageIcon denIcon;
     public static ImageIcon hiddenIcon;
     public static JLabel turnLabel;
+    public static JButton restartBtn;
     public static GameView view;
 
     public GameModel() {
@@ -55,5 +59,28 @@ public class GameModel {
 
     public static void toggleTurn() {
         isBlueTeamTurn = !isBlueTeamTurn;
+    }
+
+    public static void Restart(JFrame jFrame) {
+        SwingUtilities.invokeLater(() -> {
+            jFrame.dispose(); 
+            GameModel.isGameStarted = false;
+            GameModel.isGameEnded = false;;
+            
+            GameController controller = new GameController();
+            GameView view = new GameView(controller);
+            controller.setGameView(view); 
+            GameModel.view = view;
+            view.setVisible(true);
+        });
+    }
+
+    public static void Start() {
+        SwingUtilities.invokeLater(() -> {
+            GameController controller = new GameController();
+            view = new GameView(controller);
+            controller.setGameView(view); 
+            view.setVisible(true);
+        });
     }
 }

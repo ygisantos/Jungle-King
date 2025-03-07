@@ -1,14 +1,13 @@
 package src.view;
 
-import javax.swing.BorderFactory;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.*;
 import javax.swing.*;
 
-import java.awt.Image;
-import java.awt.Color;
-import java.awt.Font;
+import java.awt.event.ActionEvent;
+
 import java.awt.image.BufferedImage;
 
 import src.controller.GameController;
@@ -31,8 +30,19 @@ public class GameView extends JFrame {
         GameModel.turnLabel = new JLabel("Waiting for initial piece selection...");
         GameModel.turnLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(GameModel.turnLabel);
-        add(topPanel, BorderLayout.NORTH);
 
+        
+        GameModel.restartBtn = new JButton("Restart");
+        GameModel.restartBtn.setFont(new Font("Arial", Font.BOLD, 16));
+        topPanel.add(GameModel.restartBtn);
+
+        GameModel.restartBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                GameModel.Restart(GameView.this);
+            }
+        });
+
+        add(topPanel, BorderLayout.NORTH);
         
         JPanel boardPanel = new JPanel(new GridLayout(GameModel.ROWS, GameModel.COLS));
         add(boardPanel, BorderLayout.CENTER);
