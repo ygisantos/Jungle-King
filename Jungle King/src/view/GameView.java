@@ -24,6 +24,7 @@ public class GameView extends JFrame {
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setResizable(false);
 
         
         JPanel topPanel = new JPanel();
