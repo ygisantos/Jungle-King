@@ -19,10 +19,8 @@ public abstract class Piece {
     public boolean canCapture(Piece other) {
         if (other == null) return false;
         
-        // Special case: Rat can capture Elephant
         if (this instanceof Rat && other instanceof Elephant) return true;
         
-        // If opponent is in trap, any piece can capture it
         if (other.isInTrap) return true;
         
         return this.rank >= other.rank;
@@ -34,7 +32,6 @@ public abstract class Piece {
         this.isInTrap = inTrap;
     }
     
-    // Getters
     public String getName() { return name; }
     public int getRank() { return rank; }
     public boolean isBlueTeam() { return isBlueTeam; }

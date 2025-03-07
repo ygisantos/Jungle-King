@@ -34,7 +34,7 @@ public class GameController extends JFrame{
     }
     
     public GameController() {
-        
+        setFocusTraversalKeysEnabled(false);
     }
     
     public void movePiece(int fromRow, int fromCol, int toRow, int toCol) {

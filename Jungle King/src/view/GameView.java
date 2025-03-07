@@ -51,6 +51,7 @@ public class GameView extends JFrame {
         gameController.addPieceSelectionListeners();
 
         
+        setFocusTraversalKeysEnabled(false);
         addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -58,6 +59,7 @@ public class GameView extends JFrame {
             }
         });
         setFocusable(true);
+        requestFocus();
     }
 
     private void initializePieces() {
