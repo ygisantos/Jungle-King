@@ -36,7 +36,7 @@ public class GameModel {
         isBlueTeamTurn = true;
     }
 
-    public static void startGame(Piece bluePiece, Piece redPiece, boolean blueTeamFirst) {
+    public static void startGame(Piece bluePiece, Piece greenPiece, boolean blueTeamFirst) {
         isGameStarted = true;
         isBlueTeamTurn = blueTeamFirst;
     }

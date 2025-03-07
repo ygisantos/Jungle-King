@@ -44,15 +44,15 @@ public class GameController extends JFrame{
         gameView.updateBoardDisplay();
         
         
-        String currentTurn = GameModel.isBlueTeamTurn ? "Red" : "Blue";
+        String currentTurn = GameModel.isBlueTeamTurn ? "Green" : "Blue";
         GameModel.turnLabel.setText(currentTurn + "'s Turn");
 
         
         if (isDen(toRow, toCol)) {
             GameModel.setGameEnded(true);
-            GameModel.turnLabel.setText((GameModel.isBlueTeamTurn() ? "Blue" : "Red") + " team wins!");
+            GameModel.turnLabel.setText((GameModel.isBlueTeamTurn() ? "Blue" : "Green") + " team wins!");
             JOptionPane.showMessageDialog(this, 
-                (GameModel.isBlueTeamTurn() ? "Blue" : "Red") + " team wins!");
+                (GameModel.isBlueTeamTurn() ? "Blue" : "Green") + " team wins!");
         }
     }
 
@@ -79,7 +79,7 @@ public class GameController extends JFrame{
         
         JOptionPane.showMessageDialog(this, 
             "Blue selected: " + blueAnimal + "\n" +
-            "Red selected: " + redAnimal + "\n\n" +
+            "Green selected: " + redAnimal + "\n\n" +
             (blueGoesFirst ? "Blue" : "Green") + " team goes first!");
         
         GameModel.startGame(bluePieceSelected, redPieceSelected, blueGoesFirst);
@@ -92,7 +92,7 @@ public class GameController extends JFrame{
             }
         }
         
-        GameModel.turnLabel.setText((GameModel.isBlueTeamTurn() ? "Blue" : "Red") + "'s Turn");
+        GameModel.turnLabel.setText((GameModel.isBlueTeamTurn() ? "Blue" : "Green") + "'s Turn");
         gameView.updateBoardDisplay();
     }
 
