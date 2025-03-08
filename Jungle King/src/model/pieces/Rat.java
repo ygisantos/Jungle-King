@@ -2,7 +2,7 @@ package src.model.pieces;
 
 public class Rat extends Piece {
     public Rat(boolean isBlueTeam) {
-        super("Rat", 1, isBlueTeam, isBlueTeam ? "Jungle King/Assets/Pieces/blue_rat.png" : "Jungle King/Assets/Pieces/red_rat.png");
+        super("Rat", 1, isBlueTeam, isBlueTeam ? "Assets/Pieces/blue_rat.png" : "Assets/Pieces/red_rat.png");
     }
     
     @Override

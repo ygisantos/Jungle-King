@@ -48,7 +48,7 @@ public class GameView extends JFrame {
         add(boardPanel, BorderLayout.CENTER);
 
         
-        String basePath = "Jungle King/Assets/";
+        String basePath = "Assets/";
         GameModel.landIcon = scaleImage(basePath + "Board/land.png", 100, 100);
         GameModel.lakeIcon = scaleImage(basePath + "Board/lake.png", 100, 100);
         GameModel.trapIcon = scaleImage(basePath + "Board/trap.png", 100, 100);
